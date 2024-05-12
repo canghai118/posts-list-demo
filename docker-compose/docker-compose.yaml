@@ -1,0 +1,35 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0
+    volumes:
+      - $PWD/volumes/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: demopassword
+      MYSQL_DATABASE: post
+    network_mode: host
+  init-db:
+    image: mysql:8.0
+    volumes:
+      - $PWD/volumes/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: demopassword
+      MYSQL_DATABASE: posts_list_demo
+      MYSQL_USER: demouser
+      MYSQL_PASSWORD: demopassword
+    command: ["sh", "-c", "/init-database.sh"]
+    volumes:
+      - $PWD/sqls:/sqls
+      - $PWD/init-database.sh:/init-database.sh
+    network_mode: host
+    depends_on:
+      - mysql
+  redis:
+    image: redis:7
+    network_mode: host
+    command:
+      - '/etc/redis.conf'
+    volumes:
+      - $PWD/volumes/redis:/data
+      - $PWD/redis.conf:/etc/redis.conf
+  
